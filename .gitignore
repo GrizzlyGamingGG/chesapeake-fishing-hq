@@ -1,0 +1,11 @@
+# Never publish the existing private desktop settings, webhook tokens, or state.
+config.ini
+**/config.ini
+**/state/
+*.log
+**/*.log
+.env
+.env.*
+__pycache__/
+*.py[cod]
+.DS_Store
