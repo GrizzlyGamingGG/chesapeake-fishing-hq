@@ -1,0 +1,32 @@
+CHESAPEAKE FISHING HQ — PUBLISH YOUR FREE PUBLIC WEBSITE
+
+This is a complete website, not a Windows app or Discord bot.
+It is NOT public until you publish it to your GitHub account.
+
+1. Visit https://github.com/new and create a NEW PUBLIC repository
+   named: chesapeake-fishing-hq
+   Choose the Public visibility setting. Keep the default branch main.
+2. Extract this ZIP into a folder on your computer.
+3. In GitHub, open your new repository, then Add file > Upload files.
+4. Upload the CONTENTS of this extracted folder (README.md, site,
+   scripts, tests, and the .github folder); commit to the main branch.
+   If the browser does not copy the .github folder, use GitHub Desktop
+   (https://desktop.github.com/) to add files, or create
+   .github/workflows/publish.yml manually in the GitHub editor.
+   DO NOT UPLOAD YOUR OLD DESKTOP APP ZIP OR CONFIG.INI.
+5. Open repository Settings > Pages > Build and deployment.
+   Select Source: GitHub Actions.
+6. Open Actions > Update fishing reports and publish public website
+   > Run workflow. Check that its run finishes successfully.
+7. Go to Settings > Pages > Visit site. Share your public link.
+   Typical URL: https://YOUR-USERNAME.github.io/chesapeake-fishing-hq/
+
+Your PC does not need to remain on. Reports update on a scheduled job
+roughly every 3 hours when GitHub runs it. If the workflow is disabled
+after 60 days without repository activity, enable it again in Actions.
+
+BEFORE THE FIRST ACTION RUN, the website shows all 78 locations but
+ratings say that current data is unavailable. No example scores are
+presented as live information.
+
+SUPPORT / MORE DETAILS: See README.md in this folder.

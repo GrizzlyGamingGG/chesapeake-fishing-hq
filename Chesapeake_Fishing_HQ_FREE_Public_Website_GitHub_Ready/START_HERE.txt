@@ -1,0 +1,23 @@
+CHESAPEAKE FISHING HQ - FREE PUBLIC WEBSITE
+==========================================
+
+This ZIP is a ready-to-publish website project, NOT a Windows installer.
+It does not require your PC to be online after it is published.
+
+1. Extract this ZIP.
+2. Create a PUBLIC GitHub repository named: chesapeake-fishing-hq
+3. Upload ALL the contents from this folder, including .github/workflows/publish.yml.
+   GitHub Desktop is the most reliable way to include hidden .github folder.
+4. In GitHub repository, go to Settings -> Pages -> Source -> GitHub Actions.
+5. Go to Actions -> Update fishing reports and publish public website -> Run workflow.
+6. Your public URL will normally be:
+   https://YOUR_GITHUB_USERNAME.github.io/chesapeake-fishing-hq/
+7. Your dashboard automatically refreshes approximately every three hours.
+
+Full instructions and limitations: README.md
+
+CAUTION: Only upload THIS website project. DO NOT upload your old desktop ZIP,
+Discord webhook credentials, config.ini, app logs, or state folder to GitHub.
+
+The site includes 78 locations, 31 piers, and blue crab activity ratings.
+Live ratings only appear after the cloud update has successfully run.
