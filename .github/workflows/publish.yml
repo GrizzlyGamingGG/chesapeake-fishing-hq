@@ -1,0 +1,49 @@
+name: Update fishing reports and publish public website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    # At minute 17 to avoid the busy top-of-hour GitHub Actions queue.
+    # Every 3 hours, UTC. A missed/delayed run never implies fresh data.
+    - cron: '17 */3 * * *'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fishing-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Check out the public website
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify location directory and scoring logic
+        run: python -m unittest discover -s tests -v
+      - name: Refresh weather, water, tide and fishing reports
+        env:
+          WEBSITE_CONTACT_EMAIL: ${{ vars.WEBSITE_CONTACT_EMAIL }}
+        run: python scripts/update_reports.py
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+      - name: Publish website
+        id: deploy
+        uses: actions/deploy-pages@v4
