@@ -7,7 +7,7 @@ on:
   schedule:
     # At minute 17 to avoid the busy top-of-hour GitHub Actions queue.
     # Every 3 hours, UTC. A missed/delayed run never implies fresh data.
-    - cron: '17 */3 * * *'
+    - cron: '17 * * * *'
 
 permissions:
   contents: read
