@@ -4,145 +4,112 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#041426">
-  <meta name="description" content="Explore Maryland fishing piers, Chesapeake Bay blue crab activity, weather, tides and fishing conditions across 78 locations. Free public fishing dashboard.">
-  <title>Chesapeake Fishing HQ — Fishing Piers, Tides & Blue Crab</title>
+  <meta name="description" content="Free Chesapeake Bay fishing forecasts, Maryland pier reports, tides, weather and blue crab activity for 78 fishing locations.">
+  <title>Chesapeake Fishing HQ | Fishing Reports, Tides &amp; Blue Crab</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/reference-match.css">
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
   <script src="assets/app.js" defer></script>
   <script src="assets/ads-layout.js" defer></script>
 </head>
 <body>
-  <header class="topbar" id="top">
-    <div class="brand-masthead">
-      <div class="shell masthead-inner">
-        <a class="brand" href="#top" aria-label="Chesapeake Fishing HQ home">
-          <span class="brand-icon" aria-hidden="true">🐟</span>
-          <span class="brand-text">Chesapeake<span>Fishing</span><strong>HQ</strong><em>.com</em><small>FISHING REPORTS • TIDES • WEATHER • CRABBING</small></span>
-        </a>
-        <div class="masthead-badge" aria-label="Free Chesapeake Bay fishing conditions">
-          <span>◉ CHESAPEAKE BAY</span><strong>FREE FISHING REPORTS</strong>
-          <small>Maryland &amp; Mid-Atlantic</small>
-        </div>
-        <svg class="bridge-outline" viewBox="0 0 540 180" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false"><path d="M0 148 H540 M12 119 L530 119 M30 148 L30 119 M90 148 L90 119 M150 148 L150 119 M210 148 L210 119 M270 148 L270 119 M330 148 L330 119 M390 148 L390 119 M450 148 L450 119 M510 148 L510 119"/><path d="M112 148 V15 H132 V148 M402 148 V15 H422 V148 M112 15 L132 15 L422 15 M12 119 Q258 -30 530 119"/><path d="M12 119 L112 15 M66 119 L112 15 M132 15 L166 119 M132 15 L222 119 M132 15 L270 119 M422 15 L270 119 M422 15 L320 119 M422 15 L372 119 M422 15 L530 119"/><path d="M0 163 Q40 153 80 163 T160 163 T240 163 T320 163 T400 163 T480 163 T560 163"/></svg>
-      </div>
+<header class="topbar" id="top">
+  <div class="masthead">
+    <div class="mast-image fish-art" aria-hidden="true"></div>
+    <div class="masthead-brand">
+      <a class="brandword" href="#top" aria-label="Chesapeake Fishing HQ home">ChesapeakeFishing<span>HQ</span><small>.com</small></a>
+      <div class="mast-tagline">FISHING REPORTS &nbsp; • &nbsp; TIDES &nbsp; • &nbsp; WEATHER &nbsp; • &nbsp; CRABBING &nbsp; • &nbsp; LOCATIONS</div>
     </div>
-    <div class="nav-ribbon">
-      <nav class="shell top-nav" aria-label="Main navigation">
-        <a class="nav-home" href="#top">⌂ &nbsp; Home</a>
-        <a href="#explore">🐟 &nbsp; Fishing reports</a>
-        <a href="#map-section">≋ &nbsp; Tides &amp; map</a>
-        <a href="#explore">☁ &nbsp; Weather</a>
-        <a href="#explore" data-jump-filter="crab">🦀 &nbsp; Crabbing</a>
-        <a href="#explore">⌖ &nbsp; Locations</a>
-        <a href="#about">ⓘ &nbsp; About</a>
-        <a class="nav-regulations" href="https://dnr.maryland.gov/fisheries/Pages/regulations/blue-crab.aspx" target="_blank" rel="noopener noreferrer">MD regulations ↗</a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- Only header and sidebar ad placements. No ad units appear inside fishing reports. -->
-  <div class="top-ad-region shell" aria-label="Header advertisement placement">
-    <div class="ad-placement ad-top" id="headerAdSlot">
-      <span class="ad-label">ADVERTISEMENT · HEADER</span>
-      <span class="ad-decor" aria-hidden="true">▤</span>
-      <div class="ad-empty"><strong>Header banner ad space</strong><span>Reserved for Google AdSense after approval</span></div>
+    <div class="mast-image crab-art" aria-hidden="true"></div>
+    <div class="mast-image bridge-art" aria-hidden="true"></div>
+    <div class="masthead-conditions" aria-label="Selected location weather summary">
+      <div class="sky-icon" aria-hidden="true">⛅</div>
+      <div><small id="headerWeatherLocation">CHESAPEAKE BAY</small><strong id="headerCurrentTemp">—°F</strong><span id="headerCurrentText">Loading weather…</span></div>
     </div>
   </div>
-
-  <main class="dashboard-shell shell">
-    <div class="dashboard-main">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-text">
-        <div class="eyebrow"><span class="eyebrow-mark"></span> CHESAPEAKE BAY • FISHING CONDITIONS • BLUE CRAB</div>
-        <h1 id="hero-title">Today’s fishing outlook <em>on the Chesapeake.</em></h1>
-        <p>Check conditions at 78 fishing locations across the Chesapeake Bay and Mid-Atlantic. Compare pier ratings, weather, tides and blue crab activity, then open a location for its detailed report.</p>
-        <div class="hero-actions"><a class="button primary" href="#explore">Find fishing reports <span>↗</span></a><a class="button ghost" href="#map-section">Explore locations <span>⌖</span></a></div>
-        <div class="hero-status" id="heroStatus" role="status"><span class="status-dot neutral"></span> Loading report status…</div>
-      </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-topline">FIELD NOTES <span>CHESAPEAKE BAY / 39.0° N</span></div>
-        <div class="art-rings"><span></span><span></span><span></span></div>
-        <svg class="art-water" viewBox="0 0 540 205" fill="none" preserveAspectRatio="none"><path d="M-20 40Q80-8 180 35T380 35T580 28"/><path d="M-20 80Q80 32 180 75T380 75T580 68"/><path d="M-20 120Q80 72 180 115T380 115T580 108"/><path d="M-20 160Q80 112 180 155T380 155T580 148"/><path d="M-20 200Q80 152 180 195T380 195T580 188"/></svg>
-        <div class="art-float one"><span>01</span> CHECK THE WIND <strong>↗</strong></div>
-        <div class="art-float two"><span>02</span> FOLLOW THE TIDE <strong>↗</strong></div>
-        <div class="art-bottom"><span>YOUR NEXT FAVORITE SPOT IS OUT THERE</span><b>◉</b></div>
-      </div>
+  <nav class="top-nav" aria-label="Main navigation">
+    <a href="#top" class="nav-active">⌂ &nbsp; Home</a>
+    <a href="#explore">🐟 &nbsp; Fishing Reports</a>
+    <a href="#map-section">≋ &nbsp; Tides &amp; Currents</a>
+    <a href="#weather-summary">☁ &nbsp; Weather</a>
+    <a href="#explore" data-jump-filter="crab">🦀 &nbsp; Crabbing</a>
+    <a href="#explore">⌖ &nbsp; Locations</a>
+    <a href="#about">ⓘ &nbsp; About</a>
+  </nav>
+</header>
+<main class="dashboard-shell shell">
+  <div class="dashboard-main">
+    <!-- Advertising is intentionally limited to the HEADER and RIGHT SIDEBAR. -->
+    <section class="ad-placement top-banner-ad" id="headerAdSlot" aria-label="Header advertisement">
+      <span class="ad-label">ADVERTISEMENT</span>
+      <div class="ad-banner-copy"><small>YOUR NEXT ADVENTURE STARTS HERE</small><strong>FISHING &amp; OUTDOOR GEAR</strong><span>Header banner reserved for a manual Google AdSense ad unit</span></div>
+      <div class="ad-graphic" aria-hidden="true">🎣</div>
+      <span class="ad-cta">AD SPACE</span>
     </section>
-
-    <section class="metrics" aria-label="Website coverage">
-      <div class="metric"><span class="metric-symbol">◈</span><div><strong id="statLocations">78</strong><span>Fishing locations</span></div></div>
-      <div class="metric"><span class="metric-symbol">⌖</span><div><strong id="statPiers">31</strong><span>Maryland piers & docks</span></div></div>
-      <div class="metric"><span class="metric-symbol">◉</span><div><strong id="statCrab">—</strong><span>Blue crab locations</span></div></div>
-      <div class="metric metric-live"><span class="metric-symbol">↻</span><div><strong id="statUpdated">Awaiting update</strong><span>Report refresh status</span></div></div>
+    <section class="search-toolbar" aria-label="Search fishing locations">
+      <label class="search-field"><span aria-hidden="true">⌕</span><span class="sr-only">Search fishing locations</span><input id="locationSearch" type="search" placeholder="Search fishing spots (e.g., Jonas Green, Sandy Point…)" autocomplete="off"></label>
+      <a class="map-shortcut" href="#map-section">⌖ &nbsp; Explore Map</a>
+      <a class="area-shortcut" href="#explore">Chesapeake Bay Region ▾</a>
     </section>
-
+    <section class="today-outlook" id="weather-summary" aria-label="Current fishing and weather outlook">
+      <div class="outlook-top">
+        <div class="outlook-heading"><span class="outlook-graph" aria-hidden="true">▂▅▇</span><div><h1>Today's Fishing Outlook <span>— Chesapeake Bay</span></h1><p id="heroStatus" role="status"><span class="status-dot neutral"></span> Loading report status…</p></div></div>
+        <div class="outlook-summary"><div class="overall-score"><small>REGIONAL ACTIVITY INDEX</small><strong id="overallScore">—<em>/100</em></strong></div><div class="best-bets"><small>Higher-rated species</small><strong id="bestBets">Waiting for reports</strong></div></div>
+      </div>
+      <div class="weather-tiles">
+        <div class="weather-tile"><span class="weather-symbol">⛅</span><div><small>Weather</small><strong id="weatherCond">—</strong><span id="weatherArea">Annapolis area</span></div></div>
+        <div class="weather-tile"><span class="weather-symbol">≋</span><div><small>Wind</small><strong id="weatherWind">—</strong><span id="weatherGust">Gusts —</span></div></div>
+        <div class="weather-tile"><span class="weather-symbol">◉</span><div><small>Pressure</small><strong id="weatherPressure">—</strong><span>Atmospheric</span></div></div>
+        <div class="weather-tile"><span class="weather-symbol">☂</span><div><small>Rain chance</small><strong id="weatherRain">—</strong><span>Next 3 hours</span></div></div>
+        <div class="weather-tile"><span class="weather-symbol">≋</span><div><small>Tides</small><strong id="weatherTide">—</strong><span>Regional station</span></div></div>
+        <div class="weather-tile"><span class="weather-symbol">◕</span><div><small>Blue crab</small><strong id="weatherCrab">—</strong><span>Regional activity</span></div></div>
+      </div>
+      <p class="weather-context">Weather indicators are from the Annapolis-area report when available. Scores are modeled conditions, not guaranteed catches or live observations at every pier.</p>
+    </section>
     <section class="workbench" id="explore" aria-labelledby="explore-title">
-      <div class="section-heading">
-        <div><span class="kicker">FEATURED FISHING REPORTS</span><h2 id="explore-title">Find your fishing spot.</h2><p>Search, filter and compare conditions. Select a location to see its full fishing and crabbing report.</p></div>
-        <div class="score-legend"><span><i class="legend-good"></i> Favorable</span><span><i class="legend-okay"></i> Fair</span><span><i class="legend-poor"></i> Poor / caution</span></div>
-      </div>
-      <div class="filter-panel">
-        <div class="filters-tabs" role="group" aria-label="Location type">
+      <div class="section-heading"><div><h2 id="explore-title">🐟 &nbsp; Featured Fishing Reports</h2><p>Browse fishing piers, shoreline locations and crabbing conditions. Tap any report for weather, water and species details.</p></div><a class="view-locations" href="#explore-controls">View All Locations &nbsp; ↗</a></div>
+      <div class="filter-panel" id="explore-controls">
+        <div class="filters-tabs" role="group" aria-label="Location category">
           <button class="tab active" data-filter="all" aria-pressed="true">All locations <span id="allTabCount">78</span></button>
           <button class="tab" data-filter="piers" aria-pressed="false">Maryland piers <span id="pierTabCount">31</span></button>
           <button class="tab" data-filter="crab" aria-pressed="false">Blue crab <span id="crabTabCount">—</span></button>
         </div>
         <div class="filters-fields">
-          <label class="search-field"><span class="search-icon" aria-hidden="true">⌕</span><span class="sr-only">Search location</span><input id="locationSearch" type="search" placeholder="Search by pier, waterway or town…" autocomplete="off"></label>
-          <label class="select-wrap"><span class="sr-only">Filter species</span><select id="speciesFilter"><option value="all">All species</option></select></label>
-          <label class="select-wrap"><span class="sr-only">Sort locations</span><select id="sortBy"><option value="best">Highest fishing rating</option><option value="crab">Highest crab rating</option><option value="name">Location A–Z</option></select></label>
+          <label class="select-wrap"><span class="sr-only">Filter by species</span><select id="speciesFilter"><option value="all">All species</option></select></label>
+          <label class="select-wrap"><span class="sr-only">Sort locations</span><select id="sortBy"><option value="best">Highest fishing rating</option><option value="crab">Highest blue crab rating</option><option value="name">Location A–Z</option></select></label>
         </div>
       </div>
-      <div class="results-layout">
-        <div class="results-column">
-          <div class="results-row"><span id="resultCount">Loading locations…</span><span class="scale-text">ACTIVITY INDEX / 100</span></div>
-          <div class="location-list" id="locationList" aria-live="polite"><div class="empty-state">Loading your fishing locations…</div></div>
-        </div>
-        <aside class="map-column" id="map-section" aria-label="Fishing locations map">
-          <div class="map-head"><div><span class="map-label">INTERACTIVE WATER MAP</span><h3>Where to cast next.</h3></div><button id="resetMap" class="map-reset" title="Reset map to full region">Reset ↗</button></div>
-          <div id="map" class="map" aria-label="Map with fishing spot markers"><p class="map-fallback">Loading map…</p></div>
-          <div class="map-foot"><span><i></i> Select a map marker to view conditions</span><span>Powered by OpenStreetMap</span></div>
-          <div class="feature-note"><span class="feature-icon">♧</span><div><strong>Crabbing this week?</strong><p>Blue crab scores reflect modeled activity conditions—not catch reports, legal harvest windows, or confirmed pier access.</p><a href="https://dnr.maryland.gov/fisheries/Pages/regulations/blue-crab.aspx" target="_blank" rel="noopener noreferrer">Check Maryland crab rules ↗</a></div></div>
-        </aside>
-      </div>
+      <div class="results-row"><span id="resultCount">Loading fishing locations…</span><span class="scale-text">ACTIVITY RATING / 100</span></div>
+      <div class="location-list" id="locationList" aria-live="polite"><div class="empty-state">Loading reports…</div></div>
     </section>
-
-    <section class="about" id="about" aria-labelledby="about-title">
-      <div class="about-top"><span class="kicker">KNOW BEFORE YOU GO</span><h2 id="about-title">Useful data. Real-world judgment.</h2></div>
-      <div class="about-grid">
-        <article><span class="about-icon">◷</span><h3>Updated automatically</h3><p>The website automatically refreshes when its scheduled GitHub job succeeds. Check the displayed update time; delays and outages can happen.</p></article>
-        <article><span class="about-icon">≋</span><h3>Based on public data</h3><p>Ratings reuse the desktop app's weather, NOAA tides, USGS gauges and NWS alerts where available. Nearby tide stations are regional indicators.</p></article>
-        <article><span class="about-icon">⚑</span><h3>Not an access or safety guarantee</h3><p>Check pier closures, park hours, licenses, crab seasons and official warnings before traveling or fishing. Ratings are estimates, not catch predictions.</p></article>
-      </div>
-      <div class="source-line">Sources: <a href="https://www.weather.gov/" target="_blank" rel="noopener noreferrer">National Weather Service</a> · <a href="https://tidesandcurrents.noaa.gov/" target="_blank" rel="noopener noreferrer">NOAA CO-OPS</a> · <a href="https://waterdata.usgs.gov/" target="_blank" rel="noopener noreferrer">USGS Water Data</a> · <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Weather data by Open-Meteo</a> (CC BY 4.0)</div>
+    <section class="map-section" id="map-section" aria-label="Fishing locations map">
+      <div class="map-head"><div><span class="map-label">INTERACTIVE FISHING MAP</span><h3>Find your next fishing spot.</h3></div><button id="resetMap" class="map-reset">Reset map ↗</button></div>
+      <div id="map" class="map" aria-label="Map with fishing spot markers"><p class="map-fallback">Loading map…</p></div>
+      <div class="map-foot"><span>Choose a marker to see fishing conditions.</span><span>© OpenStreetMap contributors</span></div>
     </section>
-    </div>
-
-    <aside class="ad-sidebar" aria-label="Sidebar advertising and quick links">
-      <section class="ad-placement ad-sidebar-slot" id="sidebarAdSlot" aria-label="Sidebar advertisement placement">
-        <span class="ad-label">ADVERTISEMENT · SIDEBAR</span>
-        <div class="sidebar-ad-art" aria-hidden="true"><span class="ad-watermark">≋</span><span class="ad-pier">⌁</span></div>
-        <div class="ad-empty"><strong>Sidebar ad space</strong><span>Reserved for Google AdSense after approval</span></div>
-      </section>
-      <section class="quick-links" aria-labelledby="quick-links-title">
-        <h3 id="quick-links-title">⌁ &nbsp; Quick links</h3>
-        <a href="#explore">★ &nbsp; Fishing reports <span>›</span></a>
-        <a href="#map-section">≋ &nbsp; Fishing pier map <span>›</span></a>
-        <a href="#explore" data-jump-filter="piers">⌖ &nbsp; Maryland piers <span>›</span></a>
-        <a href="#explore" data-jump-filter="crab">🦀 &nbsp; Blue crab reports <span>›</span></a>
-        <a href="#about">ⓘ &nbsp; How ratings work <span>›</span></a>
-        <a href="https://dnr.maryland.gov/fisheries/Pages/regulations/blue-crab.aspx" target="_blank" rel="noopener noreferrer">⚑ &nbsp; Maryland crab rules <span>↗</span></a>
-      </section>
-      <div class="sidebar-info"><span class="status-dot"></span><div><strong>Reports powered by public data</strong><p>Activity ratings are modeled conditions, not guaranteed catches. Always check the latest report time.</p></div></div>
-    </aside>
-  </main>
-  <footer class="footer"><div class="shell footer-inner"><span>CHESAPEAKE <b>FISHING HQ</b> <em>— Built for anglers, available to everyone.</em></span><span>Fishing & crabbing advice is informational only. © <span id="year"></span></span></div></footer>
-
-  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
-  <aside class="details-drawer" id="detailsDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden>
-    <div class="drawer-inner"><button class="drawer-close" id="closeDrawer" aria-label="Close location report">✕</button><div id="drawerBody"></div></div>
+    <section class="about" id="about"><h2>About these forecasts</h2><div class="about-grid"><article><h3>Updated automatically</h3><p>Reports refresh when a scheduled GitHub Action completes. The displayed timestamp identifies the last generated data. Delays can occur.</p></article><article><h3>Public weather &amp; water data</h3><p>Models incorporate available NWS, NOAA, USGS, and weather-source readings. Not all locations have a nearby water or tide station.</p></article><article><h3>Check the conditions</h3><p>Scores estimate possible fish or blue crab activity and are not catch guarantees. Always verify pier access, forecasts, and Maryland fishing rules.</p></article></div><p class="source-line">Data sources: <a href="https://www.weather.gov/">NWS</a> · <a href="https://tidesandcurrents.noaa.gov/">NOAA</a> · <a href="https://waterdata.usgs.gov/">USGS</a> · <a href="https://open-meteo.com/">Open-Meteo</a></p></section>
+    <div class="site-metrics"><span><strong id="statLocations">78</strong> fishing locations</span><span><strong id="statPiers">31</strong> Maryland piers &amp; docks</span><span><strong id="statCrab">—</strong> blue crab locations</span><span id="statUpdated">Awaiting update</span></div>
+  </div>
+  <aside class="ad-sidebar" aria-label="Sidebar and advertisements">
+    <section class="ad-placement ad-sidebar-slot" id="sidebarAdSlot" aria-label="Sidebar advertisement">
+      <span class="ad-label">ADVERTISEMENT</span>
+      <div class="sidebar-visual"><span class="boat-silhouette">⛵</span><small>REACH THE CHESAPEAKE</small></div>
+      <div class="sidebar-ad-copy"><strong>YOUR BRAND HERE</strong><p>Sidebar advertising spot</p><small>Reserved for a manual Google AdSense ad unit after approval.</small></div>
+    </section>
+    <section class="quick-links" aria-labelledby="quick-links-title"><h3 id="quick-links-title">🔗 &nbsp; Quick Links</h3>
+      <a href="#explore">🏆 &nbsp; Fishing Reports <span>›</span></a>
+      <a href="#map-section">≋ &nbsp; Tide &amp; Fishing Map <span>›</span></a>
+      <a href="#explore" data-jump-filter="piers">⌖ &nbsp; Maryland Fishing Piers <span>›</span></a>
+      <a href="#explore" data-jump-filter="crab">🦀 &nbsp; Blue Crab Reports <span>›</span></a>
+      <a href="#about">ⓘ &nbsp; How Ratings Work <span>›</span></a>
+      <a href="https://dnr.maryland.gov/fisheries/Pages/regulations/blue-crab.aspx" target="_blank" rel="noopener noreferrer">⚑ &nbsp; Maryland Crab Rules <span>↗</span></a>
+    </section>
+    <div class="sidebar-info"><span class="status-dot"></span><div><strong>Free public fishing reports</strong><p>Based on weather and available water data. Always check local conditions before heading out.</p></div></div>
   </aside>
-</body>
-</html>
+</main>
+<footer class="footer"><div class="shell footer-inner"><span>CHESAPEAKE <b>FISHING HQ</b> — Built for anglers, available to everyone.</span><span>Informational forecasts only · © <span id="year"></span></span></div></footer>
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+<aside class="details-drawer" id="detailsDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" hidden><div class="drawer-inner"><button class="drawer-close" id="closeDrawer" aria-label="Close location report">✕</button><div id="drawerBody"></div></div></aside>
+</body></html>

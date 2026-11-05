@@ -18,10 +18,16 @@
     const age = (Date.now() - new Date(app.generated).getTime()) / 3600000;
     if (!Number.isFinite(age) || age < -0.5) return {label: 'Report timestamp unavailable', status: 'warn', short: 'Check status'};
     const time = new Intl.DateTimeFormat('en-US', {timeZone: 'America/New_York', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}).format(new Date(app.generated));
-    if (age > 5) return {label: `Report may be outdated · last updated ${time} ET`, status:'warn', short:'Delayed update'};
-    return {label: `Latest report update: ${time} ET · refreshes approximately every 3 hours`, status:'ok', short:'Recently updated'};
+    if (age > 3) return {label: `Report may be outdated · last updated ${time} ET`, status:'warn', short:'Delayed update'};
+    return {label: `Latest report update: ${time} ET · scheduled to refresh hourly`, status:'ok', short:'Recently updated'};
   }
 
+  function compact(n, suffix = '') { return n == null || !Number.isFinite(Number(n)) ? '—' : `${Math.round(Number(n))}${suffix}`; }
+  function pickReferenceReport() {
+    const keys = ['annapolis_bay','jonas_green_pier','sandy_point_bay_bridge'];
+    for (const key of keys) { const rep = app.reports.get(key); if (rep && rep.temperature_f != null) return rep; }
+    return [...app.reports.values()].find(r => r && r.temperature_f != null) || null;
+  }
   function renderTop() {
     const piers = app.locations.filter(x => x.is_pier).length;
     const crab = app.locations.filter(x => x.has_blue_crab).length;
@@ -35,6 +41,35 @@
     $('#heroStatus').innerHTML = `<span class="status-dot ${recent.status === 'ok' ? '' : recent.status}"></span>${escapeHTML(recent.label)}`;
     $('#statUpdated').textContent = recent.short;
     $('#year').textContent = new Date().getFullYear();
+
+    // Use only real generated data. The reference picture is visual guidance, not a data source.
+    const scored = [...app.reports.values()].filter(r => r && Number.isFinite(Number(r.score)) && r.score != null);
+    const regionalIndex = scored.length ? Math.round(scored.reduce((sum,r) => sum+Number(r.score),0)/scored.length) : null;
+    $('#overallScore').innerHTML = regionalIndex == null ? '—<em>/100</em>' : `${regionalIndex}<em>/100</em>`;
+    const species = new Map();
+    scored.forEach(r => (r.species_scores || []).forEach(item => {
+      if (item.score == null || !Number.isFinite(Number(item.score))) return;
+      const clean = String(item.name).replace(/\s+(seasonally|nearby)$/i,'').trim();
+      const prev = species.get(clean) || {sum:0,count:0};
+      prev.sum += Number(item.score); prev.count++;
+      species.set(clean,prev);
+    }));
+    const betNames = [...species.entries()].filter(([name,v]) => v.count >= 2 && !/blue crab/i.test(name))
+      .sort((a,b)=>b[1].sum/b[1].count-a[1].sum/a[1].count).slice(0,3).map(([name])=>name);
+    $('#bestBets').textContent = betNames.length ? betNames.join(' · ') : 'Waiting for reports';
+
+    const rep = pickReferenceReport();
+    $('#headerCurrentTemp').textContent = compact(rep && rep.temperature_f,'°F');
+    $('#headerCurrentText').textContent = rep ? String(rep.weather_text || 'Latest available conditions').slice(0,24) : 'Conditions unavailable';
+    $('#weatherCond').textContent = rep ? String(rep.weather_text || '—').slice(0,28) : '—';
+    $('#weatherArea').textContent = rep && rep.key === 'annapolis_bay' ? 'Annapolis area' : 'Regional example';
+    $('#weatherWind').textContent = compact(rep && rep.wind_mph,' mph');
+    $('#weatherGust').textContent = `Gusts ${compact(rep && rep.wind_gust_mph,' mph')}`;
+    $('#weatherPressure').textContent = rep && rep.pressure_hpa != null ? `${(Number(rep.pressure_hpa)*0.029529983).toFixed(2)} inHg` : '—';
+    $('#weatherRain').textContent = compact(rep && rep.rain_chance_pct,'%');
+    $('#weatherTide').textContent = rep && rep.tide_summary ? String(rep.tide_summary).slice(0,27) : '—';
+    const crabs = [...app.reports.values()].map(r=>r.blue_crab_score).filter(v=>v != null && Number.isFinite(Number(v)));
+    $('#weatherCrab').textContent = crabs.length ? `${Math.round(crabs.reduce((x,y)=>x+Number(y),0)/crabs.length)}/100` : '—';
   }
 
   function createSpeciesFilter() {
@@ -61,18 +96,30 @@
     return rows;
   }
 
+  function speciesIcon(name) {
+    const n = String(name).toLowerCase();
+    if (n.includes('crab')) return '🦀';
+    if (n.includes('catfish')) return '🐟';
+    if (n.includes('crappie')) return '🐟';
+    if (n.includes('strip')) return '🐟';
+    return '🐠';
+  }
   function card(loc) {
     const report = getReport(loc.key);
-    const score = report ? report.score : null;
+    const score = report && report.score != null ? Number(report.score) : null;
     const cls = level(score);
-    const danger = report && (report.hazards || []).length > 0;
-    const note = loc.is_pier ? 'MARYLAND PIER / DOCK' : 'FISHING LOCATION';
-    const desc = weatherCond(report);
-    const crab = report && report.blue_crab_score != null ? `Crab ${Math.round(report.blue_crab_score)}/100` : 'Blue crab';
-    return `<button type="button" class="spot-card" data-key="${escapeHTML(loc.key)}" aria-label="Open report for ${escapeHTML(loc.name)}">
-      <span class="score-box ${cls}"><strong>${readableScore(score)}</strong><small>${score == null ? 'NO DATA' : danger ? 'CAUTION' : cls === 'good' ? 'GOOD' : cls === 'mid' ? 'FAIR' : 'POOR'}</small></span>
-      <span class="spot-copy"><span class="spot-kicker">${note}</span><span class="spot-title" style="display:block">${escapeHTML(loc.short_name)}</span><span class="spot-desc" style="display:block">${escapeHTML(loc.name)}</span><span class="tags">${loc.has_blue_crab ? `<span class="tag crab">♧ ${escapeHTML(crab)}</span>` : ''}${danger ? '<span class="tag danger">⚑ Weather caution</span>' : ''}${!report || report.status === 'unavailable' ? '<span class="tag pending">Awaiting data</span>' : `<span class="tag">${escapeHTML(desc)}</span>`}</span></span>
-      <span class="card-arrow" aria-hidden="true">↗</span>
+    const danger = !!(report && (report.hazards || []).length);
+    const species = report && report.species_scores && report.species_scores.length ? report.species_scores : (loc.species || []).map(name=>({name,score:null}));
+    let displayed = species.filter(s=>s.name && !/blue crab/i.test(s.name)).slice(0,4);
+    if (loc.has_blue_crab) displayed = displayed.concat([{name:'Blue crab',score:report ? report.blue_crab_score : null}]);
+    const speciesHTML = displayed.map(sp=>`<span class="species-chip"><span class="species-emoji" aria-hidden="true">${speciesIcon(sp.name)}</span><span class="species-name">${escapeHTML(String(sp.name).replace(/\s+(seasonally|nearby)$/i,''))}</span><span class="species-rating ${level(sp.score)}">${readableScore(sp.score)}</span></span>`).join('');
+    const tide = report && report.tide_summary ? String(report.tide_summary).slice(0,42) : 'Not available for this location';
+    const conditions = report ? `<span>💧 Water temp: <b>${compact(report.water_temp_f,'°F')}</b></span><span>≋ Wind: <b>${compact(report.wind_mph,' mph')}</b></span><span>◷ Tide: <b>${escapeHTML(tide)}</b></span>` : '<span>Conditions not yet available</span>';
+    const imgSrc = /bridge|mchenry|annapolis|jonas|romancoke|matapeake/i.test(loc.key) ? 'bridgeview.webp' : 'pier.webp';
+    return `<button type="button" class="spot-card ${danger ? 'caution-card' : ''}" data-key="${escapeHTML(loc.key)}" aria-label="Open full fishing report for ${escapeHTML(loc.name)}">
+      <span class="spot-image" aria-hidden="true"><img src="assets/${imgSrc}" alt="" loading="lazy"><span>Illustration</span></span>
+      <span class="spot-core"><span class="spot-name">${escapeHTML(loc.short_name)}</span><span class="spot-subtitle">⌖ ${escapeHTML(loc.name)}</span><span class="spot-data-row"><span class="score-box ${cls}"><small>Fishing rating</small><strong>${readableScore(score)}<em>/100</em></strong></span><span class="species-chips">${speciesHTML}</span></span></span>
+      <span class="spot-conditions">${conditions}<span class="view-report">View full report →</span></span>
     </button>`;
   }
 
