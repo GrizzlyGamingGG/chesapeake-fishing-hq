@@ -279,3 +279,45 @@
   }
   init();
 })();
+
+/* Automatically reload when new fishing reports are published */
+(() => {
+  let lastUpdate = null;
+  let checking = false;
+
+  async function checkForUpdates() {
+    if (checking || document.hidden) return;
+    checking = true;
+
+    try {
+      const response = await fetch(
+        'data/reports.json?refresh=' + Date.now(),
+        { cache: 'no-store' }
+      );
+
+      if (!response.ok) return;
+
+      const data = await response.json();
+      const latest = data.generated_at;
+
+      if (!latest) return;
+
+      if (lastUpdate && latest !== lastUpdate) {
+        window.location.reload();
+        return;
+      }
+
+      lastUpdate = latest;
+    } catch (error) {
+      console.warn('Fishing report update check failed:', error);
+    } finally {
+      checking = false;
+    }
+  }
+
+  window.addEventListener('load', checkForUpdates);
+  setInterval(checkForUpdates, 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) checkForUpdates();
+  });
+})();
